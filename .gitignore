@@ -3,5 +3,5 @@
 /newsenv
 /tmp
 .env*
-.gif
-.lock
+*.gif
+*.lock

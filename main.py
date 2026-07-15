@@ -9,19 +9,16 @@ import os
 from agno.utils.pprint import pprint_run_response
 from dotenv import load_dotenv
 import asyncio
-from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.tools.tavily import TavilyTools
 import datetime
 
 # Load environment variables
 load_dotenv()
 
 # Get API keys from environment variables
-DUCKDUCKGO_API_KEY = os.getenv("DUCKDUCKGO_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Validate API keys
-if not DUCKDUCKGO_API_KEY:
-    raise ValueError("DUCKDUCKGO_API_KEY environment variable is not set. Please set it in your .env file or environment.")
 if not GROQ_API_KEY:
     raise ValueError("GROQ_API_KEY environment variable is not set. Please set it in your .env file or environment.")
 
@@ -31,7 +28,7 @@ os.makedirs("tmp", exist_ok=True)
 # Define storage database correctly outside the agent instantiation
 newsletter_db = SqliteDb(db_file="tmp/newsletter_data.db")
 
-# Newsletter Research Agent: Handles web searching and content extraction using duckduckgo
+# Newsletter Research Agent: Handles web searching and content extraction using Tavily API
 newsletter_agent = Agent(
     model=Groq(
         id="llama-3.1-8b-instant",
@@ -39,11 +36,7 @@ newsletter_agent = Agent(
         max_tokens=1024
     ),
     tools=[
-        DuckDuckGoTools(
-            # enable_search=True,           # Enables the search functionality
-            # search_params={},             # Instantiates an empty dictionary (avoids NoneType)
-            # formats=[ "links"] # Pass your structural requirements here safely, can also add "markdown",
-        ), 
+        TavilyTools(api_key=os.getenv("TAVILY_API_KEY")), 
     ],
     # In Agno v2, 'storage' is replaced by 'db'
     db=newsletter_db,
@@ -64,7 +57,7 @@ newsletter_agent = Agent(
         f"Today's date and time is {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}.",
         "Search for the latest, up-to-date newsletter content based on this timeframe.",
         "1. Initial Research & Discovery:",
-        "   - Use duckduckgo_search to find recent articles about the topic",
+        "   - Use TavilyTools to find recent articles about the topic",
         "   - Search for authoritative sources, expert opinions, and industry leaders",
         "   - Focus on the most recent and relevant content (prioritize last 7 days)",
         "2. Content Analysis & Processing:",
@@ -73,6 +66,8 @@ newsletter_agent = Agent(
         "   - Group related information by theme and significance",
         "4. Newsletter Creation:",
         "   - Follow the exact template structure below",
+        "IMPORTANT: Only include URLs that were explicitly returned in search results.",
+        "Never construct or guess URLs. If you don't have the exact URL, omit the link.",
     ],
     expected_output=dedent("""\
         # ${Compelling Subject Line}
@@ -116,6 +111,8 @@ def NewsletterGenerator(topic: str, search_limit: int = 2, time_range: str = "qd
         )
         
         response = newsletter_agent.run(prompt)
+        if not response or not response.content:
+            raise RuntimeError("Agent returned empty response")
         logger.info('Newsletter generated successfully')
         return response
     except ValueError as ve:

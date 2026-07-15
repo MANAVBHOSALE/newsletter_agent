@@ -1,11 +1,11 @@
 
-# AI Newsletter Agent with Agno, Duckduckgo & GROQ AI
+# AI Newsletter Agent with Agno, Tavily API & GROQ AI
 
-A powerful AI-powered newsletter generator that researches, analyzes, and creates professional newsletters on any topic using GROQ AI, Agno, and Duckduckgo. This application leverages advanced AI models to deliver well-structured, up-to-date newsletters with the latest information from the web.
+A powerful AI-powered newsletter generator that researches, analyzes, and creates professional newsletters on any topic using GROQ AI, Agno, and Tavily API. This application leverages advanced AI models to deliver well-structured, up-to-date newsletters with the latest information from the web.
 
 ## Features
 
-- Real-time web research using Duckduckgo
+- Real-time web research using Tavily API
 - AI-powered content generation with GROQ AI (Llama-3.1-70B-Instruct)
 - Professional newsletter formatting in markdown
 - Customizable search parameters (number of articles, time range)
@@ -16,7 +16,7 @@ A powerful AI-powered newsletter generator that researches, analyzes, and create
 
 ## How it Works
 
-1. **Topic Research**: The agent uses Duckduckgo to search for recent, authoritative articles and sources on the chosen topic.
+1. **Topic Research**: The agent uses Tavily API to search for recent, authoritative articles and sources on the chosen topic.
 2. **Content Analysis**: Extracts key insights, trends, and expert opinions from the gathered articles.
 3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using GROQ AI, following a professional template.
 4. **Download & Share**: Users can download the generated newsletter in markdown format for easy sharing or publishing.
@@ -68,7 +68,7 @@ uv sync
 4. Create a `.env` file in the project root with your API keys:
 
 ```env
-DUCKDUCKGO_API_KEY=your_duckduckgo_api_key
+TAVILY_API_KEY=your_tavily_api_key
 GROQ_API_KEY=your_GROQ_api_key
 ```
 
@@ -94,7 +94,7 @@ streamlit run app.py
 
 ## How It Works
 
-1. **Initial Research**: The agent uses duckduckgo to find recent, relevant articles and sources on the chosen topic.
+1. **Initial Research**: The agent uses Tavily API to find recent, relevant articles and sources on the chosen topic.
 2. **Content Analysis**: Extracts key insights, trends, and expert opinions from the gathered articles.
 3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using GROQ AI, following a professional template.
 4. **Download & Share**: Users can download the generated newsletter in markdown format for easy sharing or publishing.
@@ -103,7 +103,7 @@ streamlit run app.py
 
 - Uses Streamlit for the web interface
 - Implements Agno agent framework for workflow orchestration
-- Integrates duckduckgo for real-time web research
+- Integrates Tavily API for real-time web research
 - Utilizes Groq AI (Llama-3.1-70B-Instruct) for content generation
 - Stores agent data in a local SQLite database (`tmp/newsletter_agent.db`)
 - Supports secure API key management via `.env` or sidebar input
