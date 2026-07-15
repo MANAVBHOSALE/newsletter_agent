@@ -2,45 +2,51 @@ import json
 from textwrap import dedent
 from typing import Dict, AsyncIterator, Optional, List, Any
 from agno.agent import Agent
-from agno.models.nebius import Nebius
-from agno.storage.sqlite import SqliteStorage
+from agno.models.groq import Groq
+from agno.db.sqlite import SqliteDb
 from agno.utils.log import logger
 import os
 from agno.utils.pprint import pprint_run_response
 from dotenv import load_dotenv
 import asyncio
-from agno.tools.firecrawl import FirecrawlTools
-
+from agno.tools.duckduckgo import DuckDuckGoTools
+import datetime
 
 # Load environment variables
 load_dotenv()
 
 # Get API keys from environment variables
-FIRECRAWL_API_KEY = os.getenv("FIRECRAWL_API_KEY")
-NEBIUS_API_KEY = os.getenv("NEBIUS_API_KEY")
+DUCKDUCKGO_API_KEY = os.getenv("DUCKDUCKGO_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 # Validate API keys
-if not FIRECRAWL_API_KEY:
-    raise ValueError("FIRECRAWL_API_KEY environment variable is not set. Please set it in your .env file or environment.")
-if not NEBIUS_API_KEY:
-    raise ValueError("NEBIUS_API_KEY environment variable is not set. Please set it in your .env file or environment.")
+if not DUCKDUCKGO_API_KEY:
+    raise ValueError("DUCKDUCKGO_API_KEY environment variable is not set. Please set it in your .env file or environment.")
+if not GROQ_API_KEY:
+    raise ValueError("GROQ_API_KEY environment variable is not set. Please set it in your .env file or environment.")
 
-# Newsletter Research Agent: Handles web searching and content extraction using Firecrawl
+# Ensure database directory exists before initializing DB
+os.makedirs("tmp", exist_ok=True)
+
+# Define storage database correctly outside the agent instantiation
+newsletter_db = SqliteDb(db_file="tmp/newsletter_data.db")
+
+# Newsletter Research Agent: Handles web searching and content extraction using duckduckgo
 newsletter_agent = Agent(
-    model=Nebius(
-        id="meta-llama/Meta-Llama-3.1-70B-Instruct",
-        api_key=NEBIUS_API_KEY
+    model=Groq(
+        id="llama-3.1-8b-instant",
+        api_key=GROQ_API_KEY,
+        max_tokens=1024
     ),
     tools=[
-        FirecrawlTools(
-            search=True,
-            formats=["markdown", "links"],
-            search_params={
-                "limit": 2,
-                "tbs": "qdr:w",
-            },
-        ),
+        DuckDuckGoTools(
+            # enable_search=True,           # Enables the search functionality
+            # search_params={},             # Instantiates an empty dictionary (avoids NoneType)
+            # formats=[ "links"] # Pass your structural requirements here safely, can also add "markdown",
+        ), 
     ],
+    # In Agno v2, 'storage' is replaced by 'db'
+    db=newsletter_db,
     description=dedent("""\
     You are NewsletterResearch-X, an elite research assistant specializing in discovering
     and extracting high-quality content for compelling newsletters. Your expertise includes:
@@ -54,59 +60,20 @@ newsletter_agent = Agent(
     - Creating engaging narratives that resonate with target audiences
     - Adapting content style and depth based on audience expertise level\
     """),
-    instructions=dedent("""\
-    1. Initial Research & Discovery:
-       - Use firecrawl_search to find recent articles about the topic
-       - Search for authoritative sources, expert opinions, and industry leaders
-       - Look for industry reports, market analysis, and academic research
-       - Focus on the most recent and relevant content (prioritize last 7 days)
-       - Identify key stakeholders and their perspectives
-       - Look for contrasting viewpoints to ensure balanced coverage
-
-    2. Content Analysis & Processing:
-       - Extract key insights, trends, and patterns from each article
-       - Identify important quotes, statistics, and data points
-       - Evaluate source credibility, expertise, and potential biases
-       - Assess the impact and implications of the information
-       - Look for connections between different pieces of information
-       - Identify gaps in coverage that need additional research
-
-    3. Content Organization & Structure:
-       - Group related information by theme and significance
-       - Identify main story angles and supporting narratives
-       - Create a logical flow of information
-       - Prioritize content based on relevance and impact
-       - Ensure balanced coverage of different perspectives
-       - Structure content for optimal reader engagement
-
-    4. Newsletter Creation:
-       - Follow the exact template structure below
-       - Create compelling headlines that capture attention
-       - Write engaging introductions that set context
-       - Develop clear, concise, and informative sections
-       - Include relevant quotes and statistics to support key points
-       - Maintain consistent tone and style throughout
-       - Use markdown formatting effectively
-       - Ensure proper attribution for all content
-       - Include actionable insights and practical takeaways
-       - Add relevant links for further reading
-
-    Guidelines:
-    - Always use firecrawl_search to gather comprehensive information
-    - Prioritize recent (within 7 days) and authoritative sources
-    - Maintain proper attribution and citation for all content
-    - Focus on actionable insights and practical implications
-    - Keep content engaging, accessible, and well-structured
-    - Use markdown formatting consistently and effectively
-    - Ensure proper formatting and structure throughout
-    - Replace all {placeholder} fields with specific, relevant content
-    - Create specific, topic-relevant titles for sections
-    - Include diverse perspectives and balanced viewpoints
-    - Add value through analysis and expert insights
-    - Maintain journalistic integrity and ethical standards
-    - STRICTLY follow the expected_output format
-                                       
-    """),
+    instructions=[
+        f"Today's date and time is {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}.",
+        "Search for the latest, up-to-date newsletter content based on this timeframe.",
+        "1. Initial Research & Discovery:",
+        "   - Use duckduckgo_search to find recent articles about the topic",
+        "   - Search for authoritative sources, expert opinions, and industry leaders",
+        "   - Focus on the most recent and relevant content (prioritize last 7 days)",
+        "2. Content Analysis & Processing:",
+        "   - Extract key insights, trends, and patterns from each article",
+        "3. Content Organization & Structure:",
+        "   - Group related information by theme and significance",
+        "4. Newsletter Creation:",
+        "   - Follow the exact template structure below",
+    ],
     expected_output=dedent("""\
         # ${Compelling Subject Line}
 
@@ -134,41 +101,21 @@ newsletter_agent = Agent(
         {Properly attributed sources with links}
     """),
     markdown=True,
-    show_tool_calls=True,
-    add_datetime_to_instructions=True,
-    # Ensure database directory exists
-    # os.makedirs("tmp", exist_ok=True)
-
-    storage=SqliteStorage(
-        table_name="newsletter_agent",
-        db_file="tmp/newsletter_agent.db",
-    )
+    debug_mode=True,
 )
 
-def NewsletterGenerator(topic: str, search_limit: int = 5, time_range: str = "qdr:w") -> Dict[str, Any]:
+def NewsletterGenerator(topic: str, search_limit: int = 2, time_range: str = "qdr:w") -> Dict[str, Any]:
     """
     Generate a newsletter based on the given topic and search parameters.
-    
-    Args:
-        topic (str): The topic to generate the newsletter about
-        search_limit (int): Maximum number of articles to search and analyze
-        time_range (str): Time range for article search (e.g., "qdr:w" for past week)
-    
-    Returns:
-        Dict[str, Any]: Processed newsletter content with structured metadata
-    
-    Raises:
-        ValueError: If configuration validation fails
-        RuntimeError: If newsletter generation fails
     """
     try:
-        # Update search parameters
-        newsletter_agent.tools[0].search_params.update({
-            'limit': search_limit,
-            'tbs': time_range
-        })
+        # Update search parameters dynamically via the instantiated toolkit
+        prompt = (
+            f"Search for recent updates on: '{topic}'. "
+            f"Retrieve a maximum of {search_limit} results from within the past week."
+        )
         
-        response = newsletter_agent.run(topic)
+        response = newsletter_agent.run(prompt)
         logger.info('Newsletter generated successfully')
         return response
     except ValueError as ve:

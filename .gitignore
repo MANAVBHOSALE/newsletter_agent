@@ -2,6 +2,6 @@
 /.venv
 /newsenv
 /tmp
-.env
+.env*
 .gif
 .lock

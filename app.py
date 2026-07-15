@@ -1,7 +1,6 @@
 import streamlit as st
 import random
 from main import NewsletterGenerator
-from agno.storage.sqlite import SqliteStorage
 import os
 from dotenv import load_dotenv
 
@@ -37,9 +36,9 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Title and description
-st.title("📰 AI Newsletter Generator with Firecrawl 🔥")
+st.title("📰 AI Newsletter Generator with duckduckgo 🔥")
 st.markdown("""
-Generate professional newsletters on any topic using Nebius AI, Agno, and Firecrawl.
+Generate professional newsletters on any topic using Groq AI, Agno, and duckduckgo.
 """)
 
 # Example topics
@@ -53,24 +52,23 @@ example_topics = [
 # Sidebar for API keys and settings
 with st.sidebar:
     st.header("🔑 API Keys")
-    firecrawl_api_key = st.text_input(
-        "Firecrawl API Key",
-        value=os.getenv("FIRECRAWL_API_KEY", ""),
+    duckduckgo_api_key = st.text_input(
+        "duckduckgo API Key",
+        value=os.getenv("DUCKDUCKGO_API_KEY", ""),
         type="password",
-        help="Get your API key from https://firecrawl.dev"
     )
-    nebius_api_key = st.text_input(
-        "Nebius API Key",
-        value=os.getenv("NEBIUS_API_KEY", ""),
+    groq_api_key = st.text_input(
+        "GROQ API Key",
+        value=os.getenv("GROQ_API_KEY", ""),
         type="password",
-        help="Your Nebius API key"
+        help="Your Groq API key"
     )
     
     # Update environment variables with user input
-    if firecrawl_api_key:
-        os.environ["FIRECRAWL_API_KEY"] = firecrawl_api_key
-    if nebius_api_key:
-        os.environ["NEBIUS_API_KEY"] = nebius_api_key
+    if duckduckgo_api_key:
+        os.environ["DUCKDUCKGO_API_KEY"] = duckduckgo_api_key
+    if groq_api_key:
+        os.environ["GROQ_API_KEY"] = groq_api_key
     
     
     st.markdown("---")
@@ -118,7 +116,7 @@ def generate_newsletter():
     if not topic:
         st.error("Please enter a topic or select one from the examples.")
         return
-    elif not firecrawl_api_key or not nebius_api_key:
+    elif not duckduckgo_api_key or not groq_api_key:
         st.error("Please provide both API keys in the sidebar.")
         return
     
@@ -156,7 +154,7 @@ def generate_newsletter():
 st.markdown("---")
 st.markdown("""
 <div style='text-align: center'>
-    <p>Built with ❤️ using Streamlit and Nebius AI</p>
+    <p>Built with ❤️ using Streamlit and Groq AI</p>
 </div>
 """, unsafe_allow_html=True) 
 

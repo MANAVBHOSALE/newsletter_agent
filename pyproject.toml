@@ -1,7 +1,7 @@
 [project]
 name = "newsletter-agent"
 version = "0.1.0"
-description = "AI newsletter builder with Firecrawl"
+description = "AI newsletter builder with duckduckgo"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

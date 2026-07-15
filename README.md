@@ -1,13 +1,12 @@
-![demo](./demo.gif)
 
-# AI Newsletter Agent with Agno, Firecrawl & Nebius AI
+# AI Newsletter Agent with Agno, Duckduckgo & GROQ AI
 
-A powerful AI-powered newsletter generator that researches, analyzes, and creates professional newsletters on any topic using Nebius AI, Agno, and Firecrawl. This application leverages advanced AI models to deliver well-structured, up-to-date newsletters with the latest information from the web.
+A powerful AI-powered newsletter generator that researches, analyzes, and creates professional newsletters on any topic using GROQ AI, Agno, and Duckduckgo. This application leverages advanced AI models to deliver well-structured, up-to-date newsletters with the latest information from the web.
 
 ## Features
 
-- Real-time web research using Firecrawl
-- AI-powered content generation with Nebius AI (Llama-3.1-70B-Instruct)
+- Real-time web research using Duckduckgo
+- AI-powered content generation with GROQ AI (Llama-3.1-70B-Instruct)
 - Professional newsletter formatting in markdown
 - Customizable search parameters (number of articles, time range)
 - Download newsletters in markdown format
@@ -17,16 +16,15 @@ A powerful AI-powered newsletter generator that researches, analyzes, and create
 
 ## How it Works
 
-1. **Topic Research**: The agent uses Firecrawl to search for recent, authoritative articles and sources on the chosen topic.
+1. **Topic Research**: The agent uses Duckduckgo to search for recent, authoritative articles and sources on the chosen topic.
 2. **Content Analysis**: Extracts key insights, trends, and expert opinions from the gathered articles.
-3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using Nebius AI, following a professional template.
+3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using GROQ AI, following a professional template.
 4. **Download & Share**: Users can download the generated newsletter in markdown format for easy sharing or publishing.
 
 ## Prerequisites
 
 - Python 3.10 or higher
-- [Nebius AI API key](https://tokenfactory.nebius.com/)
-- [Firecrawl API key](https://www.firecrawl.dev/app/api-keys)
+- [GROQ AI API key](https://tokenfactory.GROQ.com/)
 
 ## Project Structure
 
@@ -46,7 +44,7 @@ newsletter_agent/
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Arindam200/awesome-ai-apps.git
+git clone https://github.com/MANAVBHOSALE/newsletter_agent.git
 cd simple_ai_agents/newsletter_agent
 ```
 
@@ -70,8 +68,8 @@ uv sync
 4. Create a `.env` file in the project root with your API keys:
 
 ```env
-FIRECRAWL_API_KEY=your_firecrawl_api_key
-NEBIUS_API_KEY=your_nebius_api_key
+DUCKDUCKGO_API_KEY=your_duckduckgo_api_key
+GROQ_API_KEY=your_GROQ_api_key
 ```
 
 ## Usage
@@ -96,17 +94,17 @@ streamlit run app.py
 
 ## How It Works
 
-1. **Initial Research**: The agent uses Firecrawl to find recent, relevant articles and sources on the chosen topic.
+1. **Initial Research**: The agent uses duckduckgo to find recent, relevant articles and sources on the chosen topic.
 2. **Content Analysis**: Extracts key insights, trends, and expert opinions from the gathered articles.
-3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using Nebius AI, following a professional template.
+3. **Newsletter Generation**: Synthesizes the information into a well-structured newsletter using GROQ AI, following a professional template.
 4. **Download & Share**: Users can download the generated newsletter in markdown format for easy sharing or publishing.
 
 ## Technical Details
 
 - Uses Streamlit for the web interface
 - Implements Agno agent framework for workflow orchestration
-- Integrates Firecrawl for real-time web research
-- Utilizes Nebius AI (Llama-3.1-70B-Instruct) for content generation
+- Integrates duckduckgo for real-time web research
+- Utilizes Groq AI (Llama-3.1-70B-Instruct) for content generation
 - Stores agent data in a local SQLite database (`tmp/newsletter_agent.db`)
 - Supports secure API key management via `.env` or sidebar input
 - Implements proper error handling and logging
@@ -122,23 +120,3 @@ The generated newsletters follow this structure:
 - Quick Updates
 - This Week's Highlights
 - Sources & Further Reading
-
-## API Keys
-
-- **Firecrawl API Key**: Get your API key from [https://firecrawl.dev](https://www.firecrawl.dev/app/api-keys)
-- **Nebius API Key**: Your Nebius AI API key from [https://tokenfactory.nebius.com](https://tokenfactory.nebius.com/)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Built with Streamlit
-- Powered by Nebius AI
-- Web research powered by Firecrawl
-- Agent framework by Agno
