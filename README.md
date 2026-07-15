@@ -33,7 +33,6 @@ newsletter_agent/
 ├── app.py              # Streamlit web interface
 ├── main.py             # Core agent workflow and newsletter generation logic
 ├── requirements.txt    # Python dependencies
-├── demo.gif            # Demo animation
 ├── tmp/
 │   └── newsletter_agent.db  # Local database for agent storage
 └── README.md           # This file
