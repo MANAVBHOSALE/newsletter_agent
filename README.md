@@ -24,7 +24,7 @@ A powerful AI-powered newsletter generator that researches, analyzes, and create
 ## Prerequisites
 
 - Python 3.10 or higher
-- [GROQ AI API key](https://tokenfactory.GROQ.com/)
+- [GROQ AI API key](https://console.groq.com/dashboard/logs?cursor=)
 
 ## Project Structure
 
